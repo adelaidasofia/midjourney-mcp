@@ -1,0 +1,3 @@
+fastmcp>=3.2.3,<4.0
+httpx>=0.27,<1.0
+mycelium-security @ git+https://github.com/adelaidasofia/mycelium-security.git@v0.1.0

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+admin.env
+audit.log.jsonl
+spend.json
+*.log
+.pytest_cache/
+.ruff_cache/
