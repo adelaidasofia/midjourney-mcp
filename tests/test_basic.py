@@ -32,15 +32,16 @@ def _reload(monkeypatch, **env):
         else:
             monkeypatch.setenv(k, str(v))
     for mod_name in ("audit", "costs", "client", "server"):
-        if mod_name in sys.modules:
-            importlib.reload(sys.modules[mod_name])
-    return importlib.import_module("server")
+        full_name = f"midjourney_mcp.{mod_name}"
+        if full_name in sys.modules:
+            importlib.reload(sys.modules[full_name])
+    return importlib.import_module("midjourney_mcp.server")
 
 
 def test_audit_redaction_uses_override(tmp_path, monkeypatch):
     log = tmp_path / "audit.log.jsonl"
     monkeypatch.setenv("MIDJOURNEY_MCP_AUDIT_LOG", str(log))
-    import audit  # type: ignore
+    from midjourney_mcp import audit  # type: ignore
     importlib.reload(audit)
     audit.write("smoke", 5, {"input": {"x": 1}, "output": {"y": "z"}}, "none", extra={"task_id": "tk_abc"})
     assert log.exists()
@@ -49,7 +50,7 @@ def test_audit_redaction_uses_override(tmp_path, monkeypatch):
 
 
 def test_sanitize_error_strips_secret_patterns():
-    from client import sanitize_error  # type: ignore
+    from midjourney_mcp.client import sanitize_error  # type: ignore
     raw = "X-API-Key: pk_live_abc was rejected; Authorization: Bearer mysecret; api_key=oops; token=lol"
     cleaned = sanitize_error(raw)
     assert "pk_live_abc" not in cleaned
@@ -59,7 +60,7 @@ def test_sanitize_error_strips_secret_patterns():
 
 
 def test_piapi_error_classification():
-    from client import _classify  # type: ignore
+    from midjourney_mcp.client import _classify  # type: ignore
     assert _classify(401, None, "") == "auth"
     assert _classify(403, None, "") == "auth"
     assert _classify(404, None, "") == "not_found"
@@ -73,7 +74,7 @@ def test_piapi_error_classification():
 
 def test_cost_estimates_scale_with_process_mode(monkeypatch):
     monkeypatch.delenv("MIDJOURNEY_MCP_PROCESS_MODE", raising=False)
-    import costs  # type: ignore
+    from midjourney_mcp import costs  # type: ignore
     importlib.reload(costs)
     assert costs.estimate_usd("imagine", "relax") < costs.estimate_usd("imagine", "fast")
     assert costs.estimate_usd("imagine", "fast") < costs.estimate_usd("imagine", "turbo")
@@ -86,7 +87,7 @@ def test_daily_usd_cap_blocks_above_threshold(tmp_path, monkeypatch):
     monkeypatch.setenv("MIDJOURNEY_MCP_AUDIT_LOG", str(log))
     monkeypatch.setenv("MIDJOURNEY_MCP_SPEND_FILE", str(spend))
     monkeypatch.setenv("MIDJOURNEY_MCP_DAILY_USD_CAP", "0.05")  # very low cap
-    import audit  # type: ignore
+    from midjourney_mcp import audit  # type: ignore
     importlib.reload(audit)
     # First imagine fits.
     audit.record_spend("imagine", 0.04, None)
@@ -100,7 +101,7 @@ def test_cap_zero_disables_check(tmp_path, monkeypatch):
     spend = tmp_path / "spend.json"
     monkeypatch.setenv("MIDJOURNEY_MCP_SPEND_FILE", str(spend))
     monkeypatch.setenv("MIDJOURNEY_MCP_DAILY_USD_CAP", "0")
-    import audit  # type: ignore
+    from midjourney_mcp import audit  # type: ignore
     importlib.reload(audit)
     ok, payload = audit.check_cap_or_block("imagine", 9999.0)
     assert ok is True
@@ -113,7 +114,7 @@ def test_validate_image_url_refuses_private_targets(monkeypatch):
         import mycelium_security  # noqa: F401
     except ImportError:
         pytest.skip("mycelium-security not installed in this env")
-    from client import PiAPIError, validate_image_url  # type: ignore
+    from midjourney_mcp.client import PiAPIError, validate_image_url  # type: ignore
     for bad in [
         "http://169.254.169.254/latest/meta-data/",   # AWS instance metadata
         "http://127.0.0.1/foo.jpg",
@@ -158,7 +159,7 @@ def test_imagine_refuses_when_cap_reached(monkeypatch, tmp_path):
     monkeypatch.setenv("MIDJOURNEY_MCP_DAILY_USD_CAP", "0.05")
     s = _reload(monkeypatch)
     # Pre-spend up to cap.
-    import audit  # type: ignore
+    from midjourney_mcp import audit  # type: ignore
     audit.record_spend("imagine", 0.04, None)
     fn = s.imagine.fn if hasattr(s.imagine, "fn") else s.imagine
     out = fn(prompt="a cat")

@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=70.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "midjourney-mcp"
 version = "0.1.0"
@@ -22,3 +26,9 @@ python_files = ["test_*.py"]
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.15.14",
+]

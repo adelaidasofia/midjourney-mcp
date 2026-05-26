@@ -46,9 +46,8 @@ if str(_HERE) not in sys.path:
 
 from fastmcp import FastMCP
 
-import audit
-import costs
-from client import (
+from . import audit, costs
+from .client import (
     NON_TERMINAL_STATUSES,
     TERMINAL_STATUSES,
     PiAPIClient,
