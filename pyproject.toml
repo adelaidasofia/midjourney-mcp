@@ -5,7 +5,7 @@ description = "FastMCP server for Midjourney image generation via PiAPI, with da
 requires-python = ">=3.10"
 dependencies = [
     "fastmcp>=3.2.3,<4.0",
-    "httpx>=0.27,<1.0",
+    "httpx>=0.28.1,<1.0",
     "mycelium-security @ git+https://github.com/adelaidasofia/mycelium-security.git@v0.1.0",
 ]
 license = "MIT"
