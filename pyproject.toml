@@ -2,6 +2,14 @@
 requires = ["setuptools>=82.0.1", "wheel"]
 build-backend = "setuptools.build_meta"
 
+# Pin package discovery explicitly. Without this, setuptools auto-discovery
+# infers packages from the layout, which is ambiguous once a second top-level
+# dir appears and can fail the build ("Multiple top-level modules discovered in
+# a flat-layout"). Naming the package makes the editable + wheel build
+# deterministic. Mirrors slack-mcp / finance-mcp.
+[tool.setuptools.packages.find]
+include = ["midjourney_mcp*"]
+
 [project]
 name = "midjourney-mcp"
 version = "0.1.0"
