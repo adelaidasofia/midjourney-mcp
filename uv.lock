@@ -715,7 +715,7 @@ dev = [
 requires-dist = [
     { name = "fastmcp", specifier = ">=3.4.2,<4.0" },
     { name = "httpx", specifier = ">=0.28.1,<1.0" },
-    { name = "mycelium-security", git = "https://github.com/adelaidasofia/mycelium-security.git?rev=v0.1.0" },
+    { name = "mycelium-security", git = "https://github.com/adelaidasofia/mycelium-security.git?rev=v0.1.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.3,<10.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8,<1.0" },
 ]
@@ -738,8 +738,8 @@ wheels = [
 
 [[package]]
 name = "mycelium-security"
-version = "0.1.0"
-source = { git = "https://github.com/adelaidasofia/mycelium-security.git?rev=v0.1.0#844645e5fa85a7e24d89f35ef41b576566824ed7" }
+version = "0.1.1"
+source = { git = "https://github.com/adelaidasofia/mycelium-security.git?rev=v0.1.1#48ca768210e94e98aeb00283f50c3c0e39335855" }
 
 [[package]]
 name = "openapi-pydantic"
